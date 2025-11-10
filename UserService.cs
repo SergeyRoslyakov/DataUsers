@@ -9,12 +9,13 @@ namespace pz4
     {
         private List<User> allUsers = new List<User>();
 
-        // Длинный метод со множеством ответственностей
+        private static List<User> searchCache = new List<User>();
+
         public void ProcessUsers(string filePath, bool backup, bool validate, bool sort)
         {
             if (File.Exists(filePath))
             {
-                string[] lines = File.ReadAllLines(filePath);
+                string[] lines = File.ReadAllLines(filePath); 
                 foreach (string line in lines)
                 {
                     string[] parts = line.Split(',');
@@ -54,7 +55,6 @@ namespace pz4
             }
         }
 
-        // Еще один длинный метод
         public List<User> FindUsers(string search, bool byName, bool byEmail, bool activeOnly)
         {
             List<User> result = new List<User>();
@@ -83,11 +83,11 @@ namespace pz4
                     result.Add(user);
                 }
             }
+            searchCache.AddRange(result); 
 
             return result;
         }
 
-        // Дублирование логики сохранения
         public void ExportUsers(string filePath, bool activeOnly)
         {
             List<string> lines = new List<string>();
@@ -102,4 +102,3 @@ namespace pz4
         }
     }
 }
-

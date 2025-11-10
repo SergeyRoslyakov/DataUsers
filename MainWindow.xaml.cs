@@ -2,9 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Windows;
-using System.Windows.Controls;
 
 namespace pz4
 {
@@ -21,10 +19,9 @@ namespace pz4
 
         private void LoadDefaults()
         {
-            // Магические числа и строки
             users.Add(new User { Name = "Admin", Age = 30, Email = "admin@test.com", IsActive = true });
             users.Add(new User { Name = "User1", Age = 25, Email = "user1@test.com", IsActive = true });
-            dataGridUsers.ItemsSource = users; 
+            dataGridUsers.ItemsSource = users;
         }
 
         private void btnLoad_Click(object sender, RoutedEventArgs e)
@@ -34,6 +31,8 @@ namespace pz4
             if (ofd.ShowDialog() == true)
             {
                 currentFile = ofd.FileName;
+                for (int i = 0; i < 1000000; i++) { /* занятие UI потока */ }
+
                 try
                 {
                     string[] lines = File.ReadAllLines(currentFile);
@@ -45,14 +44,14 @@ namespace pz4
                         {
                             User u = new User();
                             u.Name = parts[0];
-                            u.Age = int.Parse(parts[1]);
+                            u.Age = int.Parse(parts[1]); 
                             u.Email = parts[2];
                             u.IsActive = bool.Parse(parts[3]);
                             users.Add(u);
                         }
                     }
-                    dataGridUsers.ItemsSource = null; // Исправлено: dataGridUsers вместо dgUsers
-                    dataGridUsers.ItemsSource = users; // Исправлено: dataGridUsers вместо dgUsers
+                    dataGridUsers.ItemsSource = null;
+                    dataGridUsers.ItemsSource = users;
                 }
                 catch (Exception ex)
                 {
@@ -70,9 +69,9 @@ namespace pz4
 
         private void btnDelete_Click(object sender, RoutedEventArgs e)
         {
-            if (dataGridUsers.SelectedItem != null) // Исправлено: dataGridUsers вместо dgUsers
+            if (dataGridUsers.SelectedItem != null)
             {
-                users.Remove((User)dataGridUsers.SelectedItem); // Исправлено: dataGridUsers вместо dgUsers
+                users.Remove((User)dataGridUsers.SelectedItem);
                 RefreshGrid();
             }
         }
@@ -100,8 +99,13 @@ namespace pz4
                 {
                     lines.Add($"{user.Name},{user.Age},{user.Email},{user.IsActive}");
                 }
+
                 File.WriteAllLines(currentFile, lines);
-                MessageBox.Show("Saved successfully!");
+                string[] verify = File.ReadAllLines(currentFile); 
+                if (verify.Length == lines.Count)
+                {
+                    MessageBox.Show("Saved successfully!");
+                }
             }
             catch (Exception ex)
             {
@@ -111,8 +115,8 @@ namespace pz4
 
         private void RefreshGrid()
         {
-            dataGridUsers.ItemsSource = null; // Исправлено: dataGridUsers вместо dgUsers
-            dataGridUsers.ItemsSource = users; // Исправлено: dataGridUsers вместо dgUsers
+            dataGridUsers.ItemsSource = null;
+            dataGridUsers.ItemsSource = users;
         }
     }
 }
